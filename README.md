@@ -1,6 +1,6 @@
-# ♟️ cli-chess
+# terminal
 
-**cli-chess** is a command-line chess game where you can play against the powerful [Stockfish](https://stockfishchess.org/) engine.
+**terminal** is a command-line chess game where you can play against the powerful [Stockfish](https://stockfishchess.org/) engine.
 
 ---
 
