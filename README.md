@@ -9,7 +9,7 @@
 - Play chess in the terminal
 - Powered by Stockfish via UCI protocol
 - Lightweight and modular design
-- Designed to integrate with a standalone [`chessboard`](https://github.com/chess-labs/chessboard) logic module (WIP)
+- Designed to integrate with a standalone [`core`](https://github.com/chess-labs/core) logic module (WIP)
 
 ---
 
@@ -27,13 +27,6 @@
 pnpm install
 pnpm start
 ```
-
----
-
-## ⚠️ Note: chessboard module in progress
-
-This project is built to work with a separate chessboard TypeScript module that handles all chess rules and board state.
-That module is currently under development.
 
 ---
 
