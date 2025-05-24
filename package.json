@@ -1,0 +1,43 @@
+{
+  "name": "terminal",
+  "version": "1.0.0",
+  "description": "A command-line chess game powered by Stockfish",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "pnpm build && node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "chess",
+    "terminal",
+    "stockfish",
+    "cli",
+    "game"
+  ],
+  "author": "Chess Labs",
+  "license": "MIT",
+  "dependencies": {
+    "@chess-labs/core": "^1.0.2",
+    "@types/inquirer": "^9.0.8",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "inquirer": "^9.2.15"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "terminal-chess": "./dist/index.js"
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+}
