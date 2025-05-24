@@ -58,7 +58,9 @@ export class ChessGame {
       for (let col = 0; col < 8; col++) {
         const piece = this.coreGameState.board[row][col];
         if (piece) {
-          const pieceKey = `${piece.color === Color.WHITE ? 'w' : 'b'}${piece.type[0]}` as keyof typeof pieces;
+          // Map piece types to correct characters
+          const typeChar = piece.type === 'knight' ? 'n' : piece.type[0];
+          const pieceKey = `${piece.color === Color.WHITE ? 'w' : 'b'}${typeChar}` as keyof typeof pieces;
           result += pieces[pieceKey] || '?';
         } else {
           // Alternating background for empty squares
