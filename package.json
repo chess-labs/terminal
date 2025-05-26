@@ -1,6 +1,6 @@
 {
   "name": "@chess-labs/terminal",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A command-line chess game powered by Stockfish",
   "main": "dist/index.js",
   "type": "module",
