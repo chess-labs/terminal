@@ -29,8 +29,18 @@ export class ChessCLI {
   private async getGameConfig(): Promise<GameConfig> {
     console.log(chalk.blue('🔧 Game Configuration\n'));
 
-    const answers = await inquirer.prompt([
-      {
+    // Ask if user wants to customize engine path
+    const customPathAnswer = await inquirer.prompt({
+      type: 'confirm',
+      name: 'customPath',
+      message: 'Use custom Stockfish path?',
+      default: false,
+    });
+
+    let enginePath = 'stockfish'; // Default path
+
+    if (customPathAnswer.customPath) {
+      const enginePathAnswer = await inquirer.prompt({
         type: 'input',
         name: 'enginePath',
         message: 'Stockfish executable path:',
@@ -38,34 +48,40 @@ export class ChessCLI {
         validate: (input: string) => {
           return input.trim().length > 0 || 'Please enter a valid path';
         },
+      });
+      enginePath = enginePathAnswer.enginePath.trim();
+    }
+
+    const skillLevelAnswer = await inquirer.prompt({
+      type: 'list',
+      name: 'skillLevel',
+      message: 'Choose engine difficulty:',
+      choices: [
+        { name: '🟢 Beginner (Level 1-5)', value: 3 },
+        { name: '🟡 Intermediate (Level 6-10)', value: 8 },
+        { name: '🟠 Advanced (Level 11-15)', value: 13 },
+        { name: '🔴 Expert (Level 16-20)', value: 18 },
+        { name: '⚡ Maximum Strength', value: 20 },
+      ],
+    });
+
+    const timeLimitAnswer = await inquirer.prompt({
+      type: 'number',
+      name: 'timeLimit',
+      message: 'Engine thinking time (milliseconds):',
+      default: 3000,
+      validate: (input: number | undefined) => {
+        if (input === undefined || input <= 0) {
+          return 'Please enter a positive number';
+        }
+        return true;
       },
-      {
-        type: 'list',
-        name: 'skillLevel',
-        message: 'Choose engine difficulty:',
-        choices: [
-          { name: '🟢 Beginner (Level 1-5)', value: 3 },
-          { name: '🟡 Intermediate (Level 6-10)', value: 8 },
-          { name: '🟠 Advanced (Level 11-15)', value: 13 },
-          { name: '🔴 Expert (Level 16-20)', value: 18 },
-          { name: '⚡ Maximum Strength', value: 20 },
-        ],
-      },
-      {
-        type: 'number',
-        name: 'timeLimit',
-        message: 'Engine thinking time (milliseconds):',
-        default: 3000,
-        validate: (input: number) => {
-          return input > 0 || 'Please enter a positive number';
-        },
-      },
-    ]);
+    });
 
     return {
-      enginePath: answers.enginePath.trim(),
-      skillLevel: answers.skillLevel,
-      timeLimit: answers.timeLimit,
+      enginePath,
+      skillLevel: skillLevelAnswer.skillLevel,
+      timeLimit: timeLimitAnswer.timeLimit,
     };
   }
 
@@ -101,33 +117,31 @@ export class ChessCLI {
   private async handlePlayerTurn(): Promise<void> {
     if (!this.game) return;
 
-    const answer = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'move',
-        message: 'Your move:',
-        validate: (input: string) => {
-          const trimmed = input.trim().toLowerCase();
+    const answer = await inquirer.prompt({
+      type: 'input',
+      name: 'move',
+      message: 'Your move:',
+      validate: (input: string) => {
+        const trimmed = input.trim().toLowerCase();
 
-          if (trimmed === 'quit' || trimmed === 'help') {
-            return true;
-          }
-
-          // Basic move format validation
-          const parts = trimmed.split(' ');
-          if (parts.length !== 2) {
-            return 'Please enter move in format: e2 e4';
-          }
-
-          const [from, to] = parts;
-          if (!this.isValidSquare(from) || !this.isValidSquare(to)) {
-            return 'Please enter valid squares (a1-h8)';
-          }
-
+        if (trimmed === 'quit' || trimmed === 'help') {
           return true;
-        },
+        }
+
+        // Basic move format validation
+        const parts = trimmed.split(' ');
+        if (parts.length !== 2) {
+          return 'Please enter move in format: e2 e4';
+        }
+
+        const [from, to] = parts;
+        if (!this.isValidSquare(from) || !this.isValidSquare(to)) {
+          return 'Please enter valid squares (a1-h8)';
+        }
+
+        return true;
       },
-    ]);
+    });
 
     const input = answer.move.trim().toLowerCase();
 
@@ -166,11 +180,11 @@ export class ChessCLI {
   private showHelp(): void {
     console.log(chalk.blue('\n📖 Help'));
     console.log(chalk.gray('━'.repeat(50)));
-    console.log(chalk.white('Move format: ') + chalk.yellow('e2 e4') + chalk.gray(' (from-square to-square)'));
-    console.log(chalk.white('Examples: ') + chalk.yellow('e2 e4, g1 f3, o-o (castling)'));
+    console.log(`${chalk.white('Move format: ')}${chalk.yellow('e2 e4')}${chalk.gray(' (from-square to-square)')}`);
+    console.log(`${chalk.white('Examples: ')}${chalk.yellow('e2 e4, g1 f3, o-o (castling)')}`);
     console.log(chalk.white('Commands:'));
-    console.log(chalk.yellow('  help') + chalk.gray(' - Show this help'));
-    console.log(chalk.yellow('  quit') + chalk.gray(' - Exit the game'));
-    console.log(chalk.gray('━'.repeat(50) + '\n'));
+    console.log(`${chalk.yellow('  help')}${chalk.gray(' - Show this help')}`);
+    console.log(`${chalk.yellow('  quit')}${chalk.gray(' - Exit the game')}`);
+    console.log(`${chalk.gray('━'.repeat(50))}\n`);
   }
 }
