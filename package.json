@@ -1,5 +1,5 @@
 {
-  "name": "terminal",
+  "name": "@chess-labs/terminal",
   "version": "1.0.2",
   "description": "A command-line chess game powered by Stockfish",
   "main": "dist/index.js",
@@ -9,17 +9,28 @@
     "start": "pnpm build && node dist/index.js",
     "dev": "tsx src/index.ts",
     "test": "vitest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
   },
   "keywords": [
     "chess",
     "terminal",
     "stockfish",
     "cli",
-    "game"
+    "game",
+    "command-line",
+    "interactive"
   ],
   "author": "Chess Labs",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chess-labs/terminal.git"
+  },
+  "homepage": "https://github.com/chess-labs/terminal#readme",
+  "bugs": {
+    "url": "https://github.com/chess-labs/terminal/issues"
+  },
   "dependencies": {
     "@chess-labs/core": "^1.0.22",
     "chalk": "^5.4.1",
@@ -37,7 +48,14 @@
     "node": ">=18.0.0"
   },
   "bin": {
-    "terminal-chess": "./dist/index.js"
+    "terminal-chess": "./dist/index.js",
+    "chess": "./dist/index.js"
   },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }
