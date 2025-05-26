@@ -9,7 +9,7 @@
 - Play chess in the terminal
 - Powered by Stockfish via UCI protocol
 - Lightweight and modular design
-- Designed to integrate with a standalone [`core`](https://github.com/chess-labs/core) logic module (WIP)
+- Designed to integrate with a standalone [`core`](https://github.com/chess-labs/core) logic module
 
 ---
 
