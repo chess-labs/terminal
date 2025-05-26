@@ -15,22 +15,53 @@
 
 ## Getting Started
 
-### 1. Install Stockfish
+### Prerequisites
 
-- **macOS**: `brew install stockfish`  
-- **Ubuntu**: `sudo apt install stockfish`  
+**Stockfish Engine**: Make sure you have Stockfish installed before running the game:
+
+- **macOS**: `brew install stockfish`
+- **Ubuntu**: `sudo apt install stockfish`
 - **Windows**: [Download here](https://stockfishchess.org/download/)
 
-### 2. Install dependencies and run
+### Installation Options
+
+#### Option 1: NPM Global Install (Recommended)
 
 ```bash
+# Install globally
+npm install -g @chess-labs/terminal
+
+# Run the game
+terminal-chess
+# or simply
+chess
+```
+
+#### Option 2: Run with npx (No Installation)
+
+```bash
+# Run without installing
+npx @chess-labs/terminal
+```
+
+#### Option 3: Build from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/chess-labs/terminal.git
+cd terminal
+
+# Install dependencies
 pnpm install
+
+# Build and run
 pnpm start
 ```
 
 ---
 
 ## Roadmap
+
 - Integrate chessboard for move validation and state handling
 - Improve terminal UI (unicode board)
 - Difficulty settings (Elo, skill level, depth)
