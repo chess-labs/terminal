@@ -44,6 +44,7 @@ describe('ChessGame', () => {
       enginePath: 'stockfish',
       skillLevel: 10,
       timeLimit: 3000,
+      playerColor: 'white',
     };
     game = new ChessGame(config);
   });
