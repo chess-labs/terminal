@@ -1,11 +1,13 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import { EventEmitter } from 'node:events';
 import type { GameConfig, EngineResponse, UCIOption } from './types.js';
+import chalk from 'chalk';
 
 export class StockfishEngine extends EventEmitter {
   private process: ChildProcess | null = null;
   private isReady = false;
   private options: Map<string, UCIOption> = new Map();
+  private isRestarting = false;
 
   constructor(private config: GameConfig) {
     super();
@@ -39,6 +41,12 @@ export class StockfishEngine extends EventEmitter {
         this.process.on('exit', (code: number | null) => {
           console.log(`Engine exited with code ${code}`);
           this.isReady = false;
+
+          // Attempt to restart engine if it wasn't intentionally stopped
+          if (!this.isRestarting && code !== 0) {
+            console.log(chalk.yellow('🔄 Attempting to restart engine...'));
+            this.attemptRestart();
+          }
         });
 
         // Initialize UCI protocol
@@ -135,13 +143,48 @@ export class StockfishEngine extends EventEmitter {
     }
   }
 
-  async getBestMove(position: string, timeLimit?: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (!this.isReady) {
-        reject(new Error('Engine not ready'));
-        return;
-      }
+  private async attemptRestart(): Promise<void> {
+    if (this.isRestarting) return;
 
+    this.isRestarting = true;
+
+    try {
+      // Wait a bit before restarting
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Clean up current process
+      this.process = null;
+      this.isReady = false;
+      this.options.clear();
+
+      // Try to restart
+      await this.start();
+      console.log(chalk.green('✅ Engine restarted successfully'));
+    } catch (error) {
+      console.error(chalk.red('❌ Failed to restart engine:'), error);
+      this.emit('restart-failed', error);
+    } finally {
+      this.isRestarting = false;
+    }
+  }
+
+  async getBestMove(position: string, timeLimit?: number): Promise<string> {
+    // If engine is not ready, try to restart once
+    if (!this.isReady && !this.isRestarting) {
+      console.log(chalk.yellow('⚠️  Engine not ready, attempting restart...'));
+      try {
+        await this.attemptRestart();
+      } catch (error) {
+        throw new Error('Engine failed to restart and is not available');
+      }
+    }
+
+    // If still not ready after restart attempt, fail
+    if (!this.isReady) {
+      throw new Error('Engine not ready and restart failed');
+    }
+
+    return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Move calculation timeout'));
       }, (timeLimit || this.config.timeLimit || 5000) + 1000);
@@ -174,6 +217,7 @@ export class StockfishEngine extends EventEmitter {
   }
 
   stop(): void {
+    this.isRestarting = true; // Prevent auto-restart
     if (this.process) {
       this.sendCommand('quit');
       this.process.kill();
