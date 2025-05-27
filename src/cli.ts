@@ -101,16 +101,25 @@ export class ChessCLI {
           await this.handlePlayerTurn();
         } else {
           // Engine's turn
-          await this.game.makeEngineMove();
+          const engineResult = await this.game.makeEngineMove();
+
+          // Check if engine move failed
+          if (!engineResult.isValid) {
+            console.log(chalk.red('❌ Engine failed to make a move. Game will be terminated.'));
+            console.log(chalk.yellow('💡 This usually happens when the chess engine crashes or becomes unavailable.'));
+            this.game.endGame();
+            break;
+          }
+
           this.game.displayBoard();
         }
       } catch (error) {
         console.error(chalk.red('❌ Error during game:'), error);
+        this.game.endGame();
         break;
       }
     }
 
-    this.game.endGame();
     console.log(chalk.blue('\n👋 Thanks for playing!'));
   }
 
