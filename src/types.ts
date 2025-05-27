@@ -12,6 +12,7 @@ export interface GameConfig {
   timeLimit?: number; // milliseconds
   depth?: number;
   skillLevel?: number; // 1-20
+  playerColor: 'white' | 'black'; // Player's chosen color
 }
 
 export interface MoveResult {

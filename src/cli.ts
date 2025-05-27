@@ -78,17 +78,31 @@ export class ChessCLI {
       },
     });
 
+    const colorAnswer = await inquirer.prompt({
+      type: 'list',
+      name: 'playerColor',
+      message: 'Choose your color:',
+      choices: [
+        { name: '⚪ White (first move)', value: 'white' },
+        { name: '⚫ Black (second move)', value: 'black' },
+      ],
+      default: 'white',
+    });
+
     return {
       enginePath,
       skillLevel: skillLevelAnswer.skillLevel,
       timeLimit: timeLimitAnswer.timeLimit,
+      playerColor: colorAnswer.playerColor,
     };
   }
 
   private async gameLoop(): Promise<void> {
     if (!this.game) return;
 
-    console.log(chalk.green('\n✨ Game started! You are playing as White.'));
+    const playerColorName = this.game.getPlayerColor() === 'white' ? 'White' : 'Black';
+    const playerColorEmoji = this.game.getPlayerColor() === 'white' ? '⚪' : '⚫';
+    console.log(chalk.green(`\n✨ Game started! You are playing as ${playerColorEmoji} ${playerColorName}.`));
     console.log(chalk.gray('Enter moves in format: e2 e4 (from-square to-square)'));
     console.log(chalk.gray('Type "quit" to exit, "help" for commands\n'));
 

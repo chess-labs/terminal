@@ -51,12 +51,23 @@ export class ChessGame {
       bk: '♚',
     };
 
-    let result = '  a b c d e f g h\n';
+    const isPlayerBlack = this.config.playerColor === 'black';
 
-    for (let row = 0; row < 8; row++) {
-      result += `${8 - row} `;
-      for (let col = 0; col < 8; col++) {
-        const piece = this.coreGameState.board[row][col];
+    // Column labels
+    const colLabels = isPlayerBlack ? 'h g f e d c b a' : 'a b c d e f g h';
+    let result = `  ${colLabels}\n`;
+
+    for (let displayRow = 0; displayRow < 8; displayRow++) {
+      // Calculate rank number to display
+      const rankNumber = isPlayerBlack ? displayRow + 1 : 8 - displayRow;
+      result += `${rankNumber} `;
+
+      for (let displayCol = 0; displayCol < 8; displayCol++) {
+        // Calculate actual board coordinates (180 degree rotation for black player)
+        const actualRow = isPlayerBlack ? 7 - displayRow : displayRow;
+        const actualCol = isPlayerBlack ? 7 - displayCol : displayCol;
+
+        const piece = this.coreGameState.board[actualRow][actualCol];
         if (piece) {
           // Map piece types to correct characters
           const typeChar = piece.type === 'knight' ? 'n' : piece.type[0];
@@ -64,14 +75,14 @@ export class ChessGame {
           result += pieces[pieceKey] || '?';
         } else {
           // Alternating background for empty squares
-          result += (row + col) % 2 === 0 ? '·' : ' ';
+          result += (actualRow + actualCol) % 2 === 0 ? '·' : ' ';
         }
         result += ' ';
       }
-      result += `${8 - row}\n`;
+      result += `${rankNumber}\n`;
     }
 
-    result += '  a b c d e f g h';
+    result += `  ${colLabels}`;
     return result;
   }
 
@@ -173,7 +184,8 @@ export class ChessGame {
   }
 
   async makeEngineMove(): Promise<MoveResult> {
-    if (this.gameState !== 'playing' || this.coreGameState.currentTurn !== Color.BLACK) {
+    const engineColor = this.config.playerColor === 'white' ? Color.BLACK : Color.WHITE;
+    if (this.gameState !== 'playing' || this.coreGameState.currentTurn !== engineColor) {
       return { move: '', isValid: false };
     }
 
@@ -247,8 +259,13 @@ export class ChessGame {
     return [...this.moveHistory];
   }
 
+  getPlayerColor(): 'white' | 'black' {
+    return this.config.playerColor;
+  }
+
   isPlayerTurn(): boolean {
-    return this.coreGameState.currentTurn === Color.WHITE;
+    const playerColor = this.config.playerColor === 'white' ? Color.WHITE : Color.BLACK;
+    return this.coreGameState.currentTurn === playerColor;
   }
 
   endGame(): void {
